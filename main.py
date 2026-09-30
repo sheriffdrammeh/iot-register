@@ -58,10 +58,43 @@ def read_int(prompt, min_value, max_value):
         print(f"Ange ett tal mellan {min_value} och {max_value}.")
 
 
-def main():
+def print_menu():
+    """Skriver ut huvudmenyn."""
+    print("\n--- IOT-REGISTER ---")
+    print("1. Lägg till enhet")
+    print("2. Visa alla enheter")
+    print("3. Sök enhet")
+    print("4. Ändra status")
+    print("5. Ta bort enhet")
+    print("6. Avsluta")
+
+
+def add_device_menu(registry):
+    """Frågar användaren om uppgifter och lägger till en ny enhet."""
     name = read_nonempty("Namn: ")
-    choice = read_int("Välj 1-5: ", 1, 5)
-    print(f"Du skrev {name} och valde {choice}")
+    device_type = read_nonempty("Typ (t.ex. sensor, gateway): ")
+    location = read_nonempty("Plats: ")
+
+    device = registry.add_device(name, device_type, location)
+    print(f"Tillagd: {device}")
+
+
+def main():
+    registry = DeviceRegistry()
+
+    while True:
+        print_menu()
+        choice = read_int("Välj (1-6): ", 1, 6)
+
+        if choice == 1:
+            add_device_menu(registry)
+        elif choice == 2:
+            registry.show_all()
+        elif choice in (3, 4, 5):
+            print("Kommer snart.")
+        else:
+            print("Hej då!")
+            break
 
 
 if __name__ == "__main__":
