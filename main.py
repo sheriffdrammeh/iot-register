@@ -33,6 +33,19 @@ class DeviceRegistry:
         for device in self.devices:
             print(device)
 
+    def search(self, term):
+        """Returnerar en lista med enheter där sökordet finns i namn, typ eller plats."""
+        term = term.lower()
+        results = []
+
+        for device in self.devices:
+            if (term in device.name.lower()
+                    or term in device.device_type.lower()
+                    or term in device.location.lower()):
+                results.append(device)
+
+        return results
+
 
 def read_nonempty(prompt):
     """Frågar tills användaren skriver något som inte är tomt."""
@@ -79,6 +92,20 @@ def add_device_menu(registry):
     print(f"Tillagd: {device}")
 
 
+def search_menu(registry):
+    """Frågar efter ett sökord och visar matchande enheter."""
+    term = read_nonempty("Sökord (namn, typ eller plats): ")
+    results = registry.search(term)
+
+    if not results:
+        print(f"Inga enheter matchade '{term}'.")
+        return
+
+    print(f"Hittade {len(results)} enhet(er):")
+    for device in results:
+        print(device)
+
+
 def main():
     registry = DeviceRegistry()
 
@@ -90,7 +117,9 @@ def main():
             add_device_menu(registry)
         elif choice == 2:
             registry.show_all()
-        elif choice in (3, 4, 5):
+        elif choice == 3:
+            search_menu(registry)
+        elif choice in (4, 5):
             print("Kommer snart.")
         else:
             print("Hej då!")
