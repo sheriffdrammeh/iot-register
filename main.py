@@ -34,15 +34,34 @@ class DeviceRegistry:
             print(device)
 
 
+def read_nonempty(prompt):
+    """Frågar tills användaren skriver något som inte är tomt."""
+    while True:
+        text = input(prompt).strip()
+        if text:
+            return text
+        print("Fältet får inte vara tomt. Försök igen.")
+
+
+def read_int(prompt, min_value, max_value):
+    """Frågar tills användaren skriver ett heltal mellan min_value och max_value."""
+    while True:
+        text = input(prompt).strip()
+        try:
+            number = int(text)
+        except ValueError:
+            print("Ange ett heltal.")
+            continue
+
+        if min_value <= number <= max_value:
+            return number
+        print(f"Ange ett tal mellan {min_value} och {max_value}.")
+
+
 def main():
-    registry = DeviceRegistry()
-
-    registry.show_all()
-
-    registry.add_device("Temp-sensor", "sensor", "Kök")
-    registry.add_device("Gateway", "gateway", "Hall")
-
-    registry.show_all()
+    name = read_nonempty("Namn: ")
+    choice = read_int("Välj 1-5: ", 1, 5)
+    print(f"Du skrev {name} och valde {choice}")
 
 
 if __name__ == "__main__":
