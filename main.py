@@ -11,6 +11,13 @@ class Device:
     def __str__(self):
         return f"[{self.device_id}] {self.name} ({self.device_type}) – {self.location} – {self.status}"
 
+    def toggle_status(self):
+        """Växlar status mellan online och offline."""
+        if self.status == "offline":
+            self.status = "online"
+        else:
+            self.status = "offline"
+
 
 class DeviceRegistry:
     """Håller reda på alla IoT-enheter i en lista."""
@@ -45,6 +52,20 @@ class DeviceRegistry:
                 results.append(device)
 
         return results
+
+    def find_by_id(self, device_id):
+        """Returnerar enheten med givet id, eller None om den inte finns."""
+        for device in self.devices:
+            if device.device_id == device_id:
+                return device
+        return None
+
+    def remove_device(self, device_id):
+        """Tar bort enheten med givet id. Returnerar den borttagna enheten, eller None."""
+        device = self.find_by_id(device_id)
+        if device is not None:
+            self.devices.remove(device)
+        return device
 
 
 def read_nonempty(prompt):
@@ -106,6 +127,47 @@ def search_menu(registry):
         print(device)
 
 
+def change_status_menu(registry):
+    """Låter användaren välja en enhet och växla dess status."""
+    if not registry.devices:
+        print("Inga enheter registrerade.")
+        return
+
+    registry.show_all()
+    device_id = read_int("Ange id: ", 1, registry.next_id - 1)
+    device = registry.find_by_id(device_id)
+
+    if device is None:
+        print(f"Ingen enhet med id {device_id}.")
+        return
+
+    device.toggle_status()
+    print(f"Uppdaterad: {device}")
+
+
+def remove_device_menu(registry):
+    """Låter användaren välja en enhet och ta bort den efter bekräftelse."""
+    if not registry.devices:
+        print("Inga enheter registrerade.")
+        return
+
+    registry.show_all()
+    device_id = read_int("Ange id: ", 1, registry.next_id - 1)
+    device = registry.find_by_id(device_id)
+
+    if device is None:
+        print(f"Ingen enhet med id {device_id}.")
+        return
+
+    answer = read_nonempty(f"Ta bort {device.name}? (j/n): ").lower()
+    if answer != "j":
+        print("Avbrutet.")
+        return
+
+    registry.remove_device(device_id)
+    print(f"Borttagen: {device}")
+
+
 def main():
     registry = DeviceRegistry()
 
@@ -119,8 +181,10 @@ def main():
             registry.show_all()
         elif choice == 3:
             search_menu(registry)
-        elif choice in (4, 5):
-            print("Kommer snart.")
+        elif choice == 4:
+            change_status_menu(registry)
+        elif choice == 5:
+            remove_device_menu(registry)
         else:
             print("Hej då!")
             break
